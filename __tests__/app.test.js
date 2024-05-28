@@ -101,4 +101,13 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  it("filters the results by topic when passed a topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(12);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
 });
