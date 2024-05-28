@@ -30,7 +30,6 @@ exports.selectArticles = () => {
      `
     )
     .then((result) => {
-      console.log(result.rows);
       return result.rows;
     });
 };
