@@ -50,6 +50,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/2")
       .expect(200)
       .then(({ body: { article } }) => {
+        console.log(article);
         expect(article).toMatchObject({
           article_id: 2,
           title: "Sony Vaio; or, The Laptop",
