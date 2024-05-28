@@ -71,4 +71,12 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
+  it("404: responds with error message when passed valid but non-existant id", () => {
+    return request(app)
+      .get("/api/articles/9999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No Article With that Id Found");
+      });
+  });
 });
