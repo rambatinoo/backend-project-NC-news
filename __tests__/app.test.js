@@ -63,4 +63,12 @@ describe("GET /api/articles/:article_id", () => {
         expect(typeof article.created_at).toBe("string");
       });
   });
+  it("400: responds with error message when an invalid id is passed", () => {
+    return request(app)
+      .get("/api/articles/not_an_id")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
 });
