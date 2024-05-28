@@ -32,7 +32,6 @@ exports.selectArticles = (topic) => {
   queryStr += `GROUP BY article_id
     ORDER BY articles.created_at DESC`;
 
-  console.log("from the model");
   return db.query(queryStr, queryArr).then((result) => {
     return result.rows;
   });

@@ -12,7 +12,12 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getArticles = (req, res, next) => {
   const { topic } = req.query;
-  selectArticles(topic).then((articles) => {
-    res.status(200).send({ articles });
-  });
+  if (!/^[a-zA-Z\s-_]+$/.test(topic)) {
+    return next({ status: 400, msg: "Invalid Topic Query" });
+  }
+  selectArticles(topic)
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch(next);
 };
