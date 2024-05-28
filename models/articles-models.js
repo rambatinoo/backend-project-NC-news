@@ -33,6 +33,12 @@ exports.selectArticles = (topic) => {
     ORDER BY articles.created_at DESC`;
 
   return db.query(queryStr, queryArr).then((result) => {
+    if (result.rows.length === 0) {
+      return Promise.reject({
+        status: 400,
+        msg: "No articles with that topic can be found",
+      });
+    }
     return result.rows;
   });
 };

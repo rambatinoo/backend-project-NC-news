@@ -119,6 +119,11 @@ describe("GET /api/articles", () => {
       });
   });
   it("404: responds with the correct error message when passed a valid but non-existant query", () => {
-    return request(app).get("/api/articles?topic=science-physics");
+    return request(app)
+      .get("/api/articles?topic=science-physics")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No articles with that topic can be found");
+      });
   });
 });
