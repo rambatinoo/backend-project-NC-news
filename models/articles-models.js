@@ -18,3 +18,19 @@ exports.selectArticle = (article_id) => {
       return result.rows[0];
     });
 };
+
+exports.selectArticles = () => {
+  return db
+    .query(
+      `SELECT article_id, articles.author, title, topic, articles.created_at, articles.votes, article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count
+    FROM articles
+    LEFT JOIN comments USING (article_id)
+    GROUP BY article_id
+    ORDER BY articles.created_at DESC
+     `
+    )
+    .then((result) => {
+      console.log(result.rows);
+      return result.rows;
+    });
+};
