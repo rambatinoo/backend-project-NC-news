@@ -110,12 +110,15 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-  it("400: returns the correct error message when passed an invalid topic query", () => {
+  it("400: responds with the correct error message when passed an invalid topic query", () => {
     return request(app)
       .get("/api/articles?topic=123")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid Topic Query");
       });
+  });
+  it("404: responds with the correct error message when passed a valid but non-existant query", () => {
+    return request(app).get("/api/articles?topic=science-physics");
   });
 });

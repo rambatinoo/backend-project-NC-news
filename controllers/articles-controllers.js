@@ -11,8 +11,10 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { topic } = req.query;
-  if (!/^[a-zA-Z\s-_]+$/.test(topic)) {
+  let { topic } = req.query;
+  if (topic) topic = topic.toLowerCase();
+
+  if (topic && !/^[a-z-_]+$/.test(topic)) {
     return next({ status: 400, msg: "Invalid Topic Query" });
   }
   selectArticles(topic)
