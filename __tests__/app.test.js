@@ -8,12 +8,12 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("No endpoint", () => {
-  it("404: responds with a 404 and error message when request made to non-existant endpoint", () => {
+  it("404: responds with a 404 and error message when request made to non-existent endpoint", () => {
     return request(app)
       .get("/not_an_endpoint")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Non existant endpoint");
+        expect(body.msg).toBe("Non existent endpoint");
       });
   });
 });
