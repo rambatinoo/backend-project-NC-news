@@ -101,4 +101,29 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  it("200: filters the results by topic when passed a topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(12);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  it("400: responds with the correct error message when passed an invalid topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=123")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Topic Query");
+      });
+  });
+  it("404: responds with the correct error message when passed a valid but non-existant query", () => {
+    return request(app)
+      .get("/api/articles?topic=science-physics")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No articles with that topic can be found");
+      });
+  });
 });

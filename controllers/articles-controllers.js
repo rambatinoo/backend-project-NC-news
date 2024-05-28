@@ -11,7 +11,15 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  selectArticles().then((articles) => {
-    res.status(200).send({ articles });
-  });
+  let { topic } = req.query;
+  if (topic) topic = topic.toLowerCase();
+
+  if (topic && !/^[a-z-_]+$/.test(topic)) {
+    return next({ status: 400, msg: "Invalid Topic Query" });
+  }
+  selectArticles(topic)
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch(next);
 };
