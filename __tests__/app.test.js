@@ -3,6 +3,7 @@ const db = require("../db/connection.js");
 const request = require("supertest");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data");
+const allEndpoints = require("../endpoints.json");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -18,7 +19,7 @@ describe("No endpoint", () => {
   });
 });
 describe("GET /api/topics", () => {
-  it("GET:200 responds with correct array of topics, containing description and slug", () => {
+  it("200 responds with correct array of topics, containing description and slug", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
@@ -28,6 +29,16 @@ describe("GET /api/topics", () => {
           expect(typeof topic.description).toBe("string");
           expect(typeof topic.slug).toBe("string");
         });
+      });
+  });
+});
+describe("GET /api", () => {
+  it("200: responds with object containing all available endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        expect(endpoints).toEqual(allEndpoints);
       });
   });
 });
