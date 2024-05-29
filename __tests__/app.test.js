@@ -182,3 +182,101 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  it("201: should add the comment to the database and respond with the added comment", () => {
+    const newComment = { username: "butter_bridge", body: "add this comment" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          body: "add this comment",
+          article_id: 2,
+          author: "butter_bridge",
+          votes: 0,
+        });
+        expect(typeof comment.created_at).toBe("string");
+      })
+      .then(() => {
+        return request(app)
+          .get("/api/articles/2/comments")
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments.length).toBe(1);
+          });
+      });
+  });
+  it("400: responds with the correct error message when the article id is invalid", () => {
+    const newComment = { username: "butter_bridge", body: "add this comment" };
+    return request(app)
+      .post("/api/articles/not_an_id/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  it("404: responds with the correct error message if the article id is valid but non-existent", () => {
+    const newComment = { username: "butter_bridge", body: "add this comment" };
+    return request(app)
+      .post("/api/articles/999/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No Article With that Id Found");
+      });
+  });
+  it("400: respond with the correct error message when the comment is in the wrong format", () => {
+    const commentWithoutUsername = { body: "add this comment" };
+    const commentWithoutBody = {
+      username: "butter_bridge",
+      bidy: "add this comment",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(commentWithoutUsername)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Incorrect Information For Request");
+      })
+      .then(() => {
+        return request(app)
+          .post("/api/articles/2/comments")
+          .send(commentWithoutBody)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Incorrect Information For Request");
+          });
+      })
+      .then(() => {
+        return request(app)
+          .post("/api/articles/2/comments")
+          .send({ username: "butter_bridge", body: 123 })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Incorrect Information For Request");
+          });
+      })
+      .then(() => {
+        return request(app)
+          .post("/api/articles/2/comments")
+          .send({ username: 123, body: "add this comment" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Incorrect Information For Request");
+          });
+      });
+  });
+  it("404: responds with the correct error message when given a valid username that doen't exist", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "Baz", body: "add this comment" })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User Cannot Be Found");
+      });
+  });
+});
