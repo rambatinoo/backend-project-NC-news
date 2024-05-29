@@ -12,11 +12,11 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getArticles = (req, res, next) => {
   let { topic } = req.query;
-  if (topic) topic = topic.toLowerCase();
+  // if (topic) topic = topic.toLowerCase();
 
-  if (topic && !/^[a-z-_]+$/.test(topic)) {
-    return next({ status: 400, msg: "Invalid Topic Query" });
-  }
+  // if (topic && !/^[a-z-_]+$/.test(topic)) {
+  //   return next({ status: 400, msg: "Invalid Topic Query" });
+  // }
   selectArticles(topic)
     .then((articles) => {
       res.status(200).send({ articles });

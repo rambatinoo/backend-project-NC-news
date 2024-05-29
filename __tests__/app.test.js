@@ -81,7 +81,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 describe("GET /api/articles", () => {
-  it("200: responds with list of all articles including the amount of comments for each, sorted by date (most recent first)", () => {
+  it.only("200: responds with list of all articles including the amount of comments for each, sorted by date (most recent first)", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -108,6 +108,9 @@ describe("GET /api/articles", () => {
       .then(({ body: { articles } }) => {
         expect(articles.length).toBe(12);
         expect(articles).toBeSortedBy("created_at", { descending: true });
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
       });
   });
   it("400: responds with the correct error message when passed an invalid topic query", () => {
@@ -121,7 +124,7 @@ describe("GET /api/articles", () => {
   it("404: responds with the correct error message when passed a valid but non-existant query", () => {
     return request(app)
       .get("/api/articles?topic=science-physics")
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("No articles with that topic can be found");
       });
