@@ -81,7 +81,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 describe("GET /api/articles", () => {
-  it.only("200: responds with list of all articles including the amount of comments for each, sorted by date (most recent first)", () => {
+  it("200: responds with list of all articles including the amount of comments for each, sorted by date (most recent first)", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -113,20 +113,28 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  it("200: responds with an empty array if passed an existing topic that has no articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toEqual([]);
+      });
+  });
   it("400: responds with the correct error message when passed an invalid topic query", () => {
     return request(app)
       .get("/api/articles?topic=123")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid Topic Query");
+        expect(body.msg).toBe("Bad Request");
       });
   });
-  it("404: responds with the correct error message when passed a valid but non-existant query", () => {
+  it("404: responds with the correct error message when passed a valid but non existant topic query", () => {
     return request(app)
       .get("/api/articles?topic=science-physics")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No articles with that topic can be found");
+        expect(body.msg).toBe("That Topic Cannot Be Found");
       });
   });
 });
