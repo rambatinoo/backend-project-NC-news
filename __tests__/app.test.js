@@ -209,4 +209,24 @@ describe("POST /api/articles/:article_id/comments", () => {
           });
       });
   });
+  it("400: responds with the correct error message when the article id is invalid", () => {
+    const newComment = { username: "butter_bridge", body: "add this comment" };
+    return request(app)
+      .post("/api/articles/not_an_id/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  it("404: responds with the correct error message if the article id is valid but non-existent", () => {
+    const newComment = { username: "butter_bridge", body: "add this comment" };
+    return request(app)
+      .post("/api/articles/999/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No Article With that Id Found");
+      });
+  });
 });
