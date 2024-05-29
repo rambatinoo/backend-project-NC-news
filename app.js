@@ -4,6 +4,7 @@ const { getTopics } = require("./controllers/topics-controllers");
 const {
   getCommentsByArticleId,
   postNewComment,
+  deleteComment,
 } = require("./controllers/comments-controllers");
 const { getEndpoints } = require("./controllers/general-controllers");
 const {
@@ -27,6 +28,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postNewComment);
 
 app.patch("/api/articles/:article_id", patchArticleById);
+
+app.delete("/api/comments/:comment_id", deleteComment);
 
 app.use("/", (req, res, next) => {
   res.status(404).send({ msg: "Non existent endpoint" });

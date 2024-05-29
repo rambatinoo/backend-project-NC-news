@@ -1,6 +1,8 @@
 const {
   selectCommentsByArticleId,
   addNewComment,
+  removeComment,
+  selectComment,
 } = require("../models/comments-models");
 const { selectArticle } = require("../models/articles-models");
 
@@ -26,6 +28,18 @@ exports.postNewComment = (req, res, next) => {
   addNewComment(article_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  selectComment(comment_id)
+    .then(() => {
+      removeComment(comment_id);
+    })
+    .then(() => {
+      res.status(204).send({});
     })
     .catch(next);
 };
