@@ -1,4 +1,5 @@
 const { selectArticle, selectArticles } = require("../models/articles-models");
+const { selectTopic } = require("../models/topics-models");
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -12,13 +13,12 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getArticles = (req, res, next) => {
   let { topic } = req.query;
-  // if (topic) topic = topic.toLowerCase();
-
-  // if (topic && !/^[a-z-_]+$/.test(topic)) {
-  //   return next({ status: 400, msg: "Invalid Topic Query" });
-  // }
-  selectArticles(topic)
-    .then((articles) => {
+  if (topic) topic = topic.toLowerCase();
+  const promises = [selectArticles(topic)];
+  if (topic) promises.push(selectTopic(topic));
+  Promise.all(promises)
+    .then((result) => {
+      const articles = result[0];
       res.status(200).send({ articles });
     })
     .catch(next);
