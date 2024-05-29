@@ -28,3 +28,17 @@ exports.addNewComment = (article_id, username, body) => {
 exports.removeComment = (comment_id) => {
   return db.query(`DELETE FROM comments WHERE comment_id = $1`, [comment_id]);
 };
+
+exports.selectComment = (comment_id) => {
+  return db
+    .query(`SELECT * FROM comments WHERE comment_id = $1`, [comment_id])
+    .then((result) => {
+      if (!result.rows.length) {
+        return Promise.reject({
+          status: 404,
+          msg: "No Comment With That Id Found",
+        });
+      }
+      return result.rows[0];
+    });
+};

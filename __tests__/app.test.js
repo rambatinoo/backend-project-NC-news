@@ -351,7 +351,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe.only("DELETE /api/comments/:comment_id", () => {
+describe("DELETE /api/comments/:comment_id", () => {
   it("204: removed the specified comment and responds with no content", () => {
     return request(app)
       .delete("/api/comments/1")
@@ -361,6 +361,22 @@ describe.only("DELETE /api/comments/:comment_id", () => {
         return db.query(`SELECT * FROM comments`).then((result) => {
           expect(result.rows.length).toBe(17);
         });
+      });
+  });
+  it("400: responds with the correct error message when given an invalid comment id", () => {
+    return request(app)
+      .delete("/api/comments/not_an_id")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("404: responds with the correct error message when given a valid but non existant comment id", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("No Comment With That Id Found");
       });
   });
 });

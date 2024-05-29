@@ -2,6 +2,7 @@ const {
   selectCommentsByArticleId,
   addNewComment,
   removeComment,
+  selectComment,
 } = require("../models/comments-models");
 const { selectArticle } = require("../models/articles-models");
 
@@ -33,7 +34,10 @@ exports.postNewComment = (req, res, next) => {
 
 exports.deleteComment = (req, res, next) => {
   const { comment_id } = req.params;
-  removeComment(comment_id)
+  selectComment(comment_id)
+    .then(() => {
+      removeComment(comment_id);
+    })
     .then(() => {
       res.status(204).send({});
     })
