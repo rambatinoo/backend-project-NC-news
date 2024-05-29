@@ -8,6 +8,12 @@ exports.selectCommentsByArticleId = (id) => {
       [id]
     )
     .then((result) => {
+      if (!result.rows[0]) {
+        return Promise.reject({
+          status: 404,
+          msg: "No Article With that Id Found",
+        });
+      }
       return result.rows;
     });
 };

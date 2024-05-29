@@ -134,7 +134,6 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
-        console.log(comments);
         expect(comments.length).toBe(11);
         expect(comments).toBeSortedBy("created_at", { descending: true });
         comments.forEach((comment) => {
@@ -146,6 +145,22 @@ describe("GET /api/articles/:article_id/comments", () => {
           expect(typeof comment.body).toBe("string");
           expect(typeof comment.article_id).toBe("number");
         });
+      });
+  });
+  it("400: responds with the correct error message when passed an invalid article id", () => {
+    return request(app)
+      .get("/api/articles/not_an_id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  it("404: responds with the correct error message when passed a valid but non-existant article id", () => {
+    return request(app)
+      .get("/api/articles/9999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No Article With that Id Found");
       });
   });
 });
