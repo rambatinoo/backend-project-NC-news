@@ -182,3 +182,31 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  it("201: should add the comment to the database and respond with the added comment", () => {
+    const newComment = { username: "butter_bridge", body: "add this comment" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          body: "add this comment",
+          article_id: 2,
+          author: "butter_bridge",
+          votes: 0,
+        });
+        expect(typeof comment.created_at).toBe("string");
+      })
+      .then(() => {
+        return request(app)
+          .get("/api/articles/2/comments")
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments.length).toBe(1);
+          });
+      });
+  });
+});
