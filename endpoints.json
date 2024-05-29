@@ -86,5 +86,18 @@
     "description": "deletes the given comment",
     "queries": [],
     "exampleResponse": "no response given, just 204 status"
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "firewizard",
+          "name": "Bryan",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        }
+      ]
+    }
   }
 }
