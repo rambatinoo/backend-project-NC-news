@@ -18,6 +18,7 @@ describe("No endpoint", () => {
       });
   });
 });
+
 describe("GET /api/topics", () => {
   it("200 responds with correct array of topics, containing description and slug", () => {
     return request(app)
@@ -80,6 +81,7 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
+
 describe("GET /api/articles", () => {
   it("200: responds with list of all articles including the amount of comments for each, sorted by date (most recent first)", () => {
     return request(app)
@@ -138,6 +140,7 @@ describe("GET /api/articles", () => {
       });
   });
 });
+
 describe("GET /api/articles/:article_id/comments", () => {
   it("200: responds with the correct array of comments, sorted by most recent first for a given article id", () => {
     return request(app)
@@ -280,6 +283,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+
 describe("PATCH /api/articles/:article_id", () => {
   it("200: updates the article and responds with the updated article", () => {
     return request(app)
@@ -343,6 +347,20 @@ describe("PATCH /api/articles/:article_id", () => {
           .then(({ body: { msg } }) => {
             expect(msg).toBe("Incorrect Information For Request");
           });
+      });
+  });
+});
+
+describe.only("DELETE /api/comments/:comment_id", () => {
+  it("204: removed the specified comment and responds with no content", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+        return db.query(`SELECT * FROM comments`).then((result) => {
+          expect(result.rows.length).toBe(17);
+        });
       });
   });
 });
