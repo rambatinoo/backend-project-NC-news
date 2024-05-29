@@ -327,4 +327,22 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(msg).toBe("No Article With That Id Found");
       });
   });
+  it("400: responds with correct error messgae when passed information in the wrong format", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inv_votes: 1 })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Incorrect Information For Request");
+      })
+      .then(() => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: "hello" })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Incorrect Information For Request");
+          });
+      });
+  });
 });

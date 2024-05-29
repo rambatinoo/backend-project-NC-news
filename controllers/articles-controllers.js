@@ -31,6 +31,9 @@ exports.getArticles = (req, res, next) => {
 exports.patchArticleById = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
+  if (typeof inc_votes !== "number") {
+    next({ code: "23502" });
+  }
   const promises = [
     updateVotes(article_id, inc_votes),
     selectArticle(article_id),
