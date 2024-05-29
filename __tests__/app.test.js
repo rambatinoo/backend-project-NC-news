@@ -86,7 +86,6 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        // console.log(articles);
         expect(articles.length).toBe(13);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
@@ -143,8 +142,16 @@ describe("GET /api/articles/:article_id/comments", () => {
           expect(typeof comment.created_at).toBe("string");
           expect(typeof comment.author).toBe("string");
           expect(typeof comment.body).toBe("string");
-          expect(typeof comment.article_id).toBe("number");
+          expect(comment.article_id).toBe(1);
         });
+      });
+  });
+  it("200: responds with an empty array when passed an existing article that has no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toEqual([]);
       });
   });
   it("400: responds with the correct error message when passed an invalid article id", () => {
