@@ -13,6 +13,9 @@ exports.errorsWithCodes = (err, req, res, next) => {
         break;
       case "23503":
         res.status(404).send({ msg: "No Article With that Id Found" });
+        break;
+      case "23502":
+        res.status(400).send({ msg: "Not Enough Information" });
     }
   } else next(err);
 };

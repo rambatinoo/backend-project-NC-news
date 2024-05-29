@@ -229,4 +229,18 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("No Article With that Id Found");
       });
   });
+  it("400: respond with the correct error message when the comment is in the wrong format", () => {
+    const commentWithoutUsername = { body: "add this comment" };
+    const commentWithoutBody = {
+      username: "butter_bridge",
+      bidy: "add this comment",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(commentWithoutUsername)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Enough Information");
+      });
+  });
 });
