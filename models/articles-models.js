@@ -12,7 +12,7 @@ exports.selectArticle = (article_id) => {
       if (result.rows.length === 0) {
         return Promise.reject({
           status: 404,
-          msg: "No Article With that Id Found",
+          msg: "No Article With That Id Found",
         });
       }
       return result.rows[0];
@@ -35,4 +35,17 @@ exports.selectArticles = (topic) => {
   return db.query(queryStr, queryArr).then((result) => {
     return result.rows;
   });
+};
+
+exports.updateVotes = (article_id, numOfVotes) => {
+  return db
+    .query(
+      `UPDATE articles SET votes = votes + $1 
+  WHERE article_id = $2
+  RETURNING *`,
+      [numOfVotes, article_id]
+    )
+    .then((result) => {
+      return result.rows[0];
+    });
 };

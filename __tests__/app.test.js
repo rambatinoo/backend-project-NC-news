@@ -76,7 +76,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/9999")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No Article With that Id Found");
+        expect(body.msg).toBe("No Article With That Id Found");
       });
   });
 });
@@ -178,7 +178,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/9999/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No Article With that Id Found");
+        expect(body.msg).toBe("No Article With That Id Found");
       });
   });
 });
@@ -226,7 +226,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No Article With that Id Found");
+        expect(body.msg).toBe("No Article With That Id Found");
       });
   });
   it("400: respond with the correct error message when the comment is in the wrong format", () => {
@@ -277,6 +277,54 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("User Cannot Be Found");
+      });
+  });
+});
+describe("PATCH /api/articles/:article_id", () => {
+  it("200: updates the article and responds with the updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          votes: 101,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+        expect(typeof article.created_at).toBe("string");
+      });
+  });
+  it("200: decreases the number of votes if passed a negative value", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -200 })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article.votes).toBe(-100);
+      });
+  });
+  it("400: responds with the correct error message when the article id is invalid", () => {
+    return request(app)
+      .patch("/api/articles/not_an_id")
+      .send({ inc_votes: 1 })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("404: responds with the correct error message when the article id is valid but non-existent", () => {
+    return request(app)
+      .patch("/api/articles/999")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("No Article With That Id Found");
       });
   });
 });
