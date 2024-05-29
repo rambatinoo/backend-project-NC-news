@@ -240,7 +240,43 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(commentWithoutUsername)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Not Enough Information");
+        expect(body.msg).toBe("Incorrect Information For Request");
+      })
+      .then(() => {
+        return request(app)
+          .post("/api/articles/2/comments")
+          .send(commentWithoutBody)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Incorrect Information For Request");
+          });
+      })
+      .then(() => {
+        return request(app)
+          .post("/api/articles/2/comments")
+          .send({ username: "butter_bridge", body: 123 })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Incorrect Information For Request");
+          });
+      })
+      .then(() => {
+        return request(app)
+          .post("/api/articles/2/comments")
+          .send({ username: 123, body: "add this comment" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Incorrect Information For Request");
+          });
+      });
+  });
+  it("404: responds with the correct error message when given a valid username that doen't exist", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "Baz", body: "add this comment" })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User Cannot Be Found");
       });
   });
 });

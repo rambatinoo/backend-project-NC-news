@@ -20,6 +20,9 @@ exports.getCommentsByArticleId = (req, res, next) => {
 exports.postNewComment = (req, res, next) => {
   const { article_id } = req.params;
   const { username, body } = req.body;
+  if (typeof username !== "string" || typeof body !== "string") {
+    next({ code: "23502" });
+  }
   addNewComment(article_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment });

@@ -21,7 +21,6 @@ exports.addNewComment = (article_id, username, body) => {
       [article_id, username, body]
     )
     .then((result) => {
-      console.log(result);
       return result.rows[0];
     });
 };
