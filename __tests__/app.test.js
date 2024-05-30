@@ -503,3 +503,66 @@ describe("GET /api/users/:username", () => {
       });
   });
 });
+
+describe.only("PATCH /api/comments/:comment_id", () => {
+  it("200: updates the number of votes and responds with the updated comment", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          votes: 21,
+          author: "butter_bridge",
+          article_id: 9,
+        });
+        expect(typeof comment.created_at).toBe("string");
+      });
+  });
+  it("200: decreases the vote count if passed negative value", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({ inc_votes: -20 })
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment.votes).toBe(-6);
+      });
+  });
+  it("400: responds with the correct error message if passed an invalid comment_id", () => {
+    return request(app)
+      .patch("/api/comments/not_an_id")
+      .send({ inc_votes: 1 })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("404: responds with the correct error message if the comment_id is valid but non-existent", () => {
+    return request(app)
+      .patch("/api/comments/999")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("No Comment With That Id Found");
+      });
+  });
+  it("400: responds with the correct error message if not passed a number for inc_votes", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({ inc_votes: "bubbles" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("400: responds wit the correct error message if inc_votes is missing", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({ vnc_votes: 1 })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Incorrect Information For Request");
+      });
+  });
+});

@@ -46,3 +46,16 @@ exports.selectComment = (comment_id) => {
       return result.rows[0];
     });
 };
+
+exports.updateComentVotes = (comment_id, voteChange) => {
+  return db
+    .query(
+      `UPDATE comments SET votes = votes + $1
+  WHERE comment_id = $2
+  RETURNING *`,
+      [voteChange, comment_id]
+    )
+    .then((result) => {
+      return result.rows[0];
+    });
+};
