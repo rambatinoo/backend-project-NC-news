@@ -3,6 +3,7 @@ const {
   addNewComment,
   removeComment,
   selectComment,
+  updateComentVotes,
 } = require("../models/comments-models");
 const { selectArticle } = require("../models/articles-models");
 
@@ -40,6 +41,21 @@ exports.deleteComment = (req, res, next) => {
     })
     .then(() => {
       res.status(204).send({});
+    })
+    .catch(next);
+};
+
+exports.patchComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { inc_votes } = req.body;
+  const promises = [
+    updateComentVotes(comment_id, inc_votes),
+    selectComment(comment_id),
+  ];
+  Promise.all(promises)
+    .then((result) => {
+      const comment = result[0];
+      res.status(200).send({ comment });
     })
     .catch(next);
 };

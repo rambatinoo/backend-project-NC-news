@@ -58,7 +58,7 @@ exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
   });
 };
 
-exports.updateVotes = (article_id, numOfVotes) => {
+exports.updateArticleVotes = (article_id, numOfVotes) => {
   return db
     .query(
       `UPDATE articles SET votes = votes + $1 

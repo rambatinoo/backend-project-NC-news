@@ -1,7 +1,7 @@
 const {
   selectArticle,
   selectArticles,
-  updateVotes,
+  updateArticleVotes,
 } = require("../models/articles-models");
 const { selectTopic } = require("../models/topics-models");
 
@@ -35,7 +35,7 @@ exports.patchArticleById = (req, res, next) => {
     next({ status: 400, msg: "inc_votes Must Be A Number" });
   }
   const promises = [
-    updateVotes(article_id, inc_votes),
+    updateArticleVotes(article_id, inc_votes),
     selectArticle(article_id),
   ];
   Promise.all(promises)
