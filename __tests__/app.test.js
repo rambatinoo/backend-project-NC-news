@@ -88,6 +88,14 @@ describe("GET /api/articles/:article_id", () => {
         expect(article.comment_count).toBe(2);
       });
   });
+  it("includes comment count when there are no comments on an article", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article.comment_count).toBe(0);
+      });
+  });
 });
 
 describe("GET /api/articles", () => {
