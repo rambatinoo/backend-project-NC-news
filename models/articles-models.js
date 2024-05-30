@@ -70,3 +70,20 @@ exports.updateArticleVotes = (article_id, numOfVotes) => {
       return result.rows[0];
     });
 };
+
+exports.addNewArticle = (author, title, body, topic, article_img_url) => {
+  let queryStr = `INSERT INTO articles (author, title, body, topic, article_img_url)
+  VALUES ($1, $2, $3, $4, `;
+  const queryArr = [author, title, body, topic];
+
+  if (article_img_url) {
+    queryStr += `$5)`;
+    queryArr.push(article_img_url);
+  } else {
+    queryStr += `DEFAULT)`;
+  }
+  queryStr += `RETURNING *`;
+  return db.query(queryStr, queryArr).then((result) => {
+    return result.rows[0];
+  });
+};

@@ -504,7 +504,7 @@ describe("GET /api/users/:username", () => {
   });
 });
 
-describe.only("PATCH /api/comments/:comment_id", () => {
+describe("PATCH /api/comments/:comment_id", () => {
   it("200: updates the number of votes and responds with the updated comment", () => {
     return request(app)
       .patch("/api/comments/1")
@@ -563,6 +563,71 @@ describe.only("PATCH /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Incorrect Information For Request");
+      });
+  });
+});
+
+describe("POST /api/articles", () => {
+  it("201: responds with the added article", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "How to eat bricks",
+      body: "don't",
+      topic: "cats",
+      article_img_url:
+        "https://libreshot.com/wp-content/uploads/2018/02/orange-brick-wall.jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 14,
+          author: "butter_bridge",
+          title: "How to eat bricks",
+          body: "don't",
+          topic: "cats",
+          article_img_url:
+            "https://libreshot.com/wp-content/uploads/2018/02/orange-brick-wall.jpg",
+          votes: 0,
+          comment_count: 0,
+        });
+        expect(typeof article.created_at).toBe("string");
+      });
+  });
+  it("400: responds with the correct error message when the provided information is in an incorrect format", () => {
+    const newArticle = {
+      author: 123,
+      title: "How to eat bricks",
+      body: "don't",
+      topic: "cats",
+      article_img_url:
+        "https://libreshot.com/wp-content/uploads/2018/02/orange-brick-wall.jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("all input values must be strings");
+      });
+  });
+  it("400: responds with the correct error message when the required fields are missing", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "How to eat bricks",
+      NOTbody: "don't",
+      topic: "cats",
+      article_img_url:
+        "https://libreshot.com/wp-content/uploads/2018/02/orange-brick-wall.jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("articles must contain: author, title, body & topic");
       });
   });
 });
