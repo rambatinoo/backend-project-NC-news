@@ -465,3 +465,17 @@ describe.only("Order by queries for GET /api/articles", () => {
       });
   });
 });
+
+describe.only("Interactions between queries on GET /api/articles", () => {
+  it("200: responds with the correct topic articles, sorted and ordered correctly", () => {
+    return request(app)
+      .get("/api/articles?order=ASC&topic=mitch&sort_by=article_id")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("article_id", { ascending: true });
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+});
