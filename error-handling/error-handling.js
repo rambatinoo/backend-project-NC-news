@@ -6,7 +6,6 @@ exports.customErrors = (err, req, res, next) => {
 
 exports.errorsWithCodes = (err, req, res, next) => {
   if (err.code) {
-    console.log(err.code);
     switch (err.code) {
       case "22P02":
         res.status(400).send({ msg: "Bad Request" });
