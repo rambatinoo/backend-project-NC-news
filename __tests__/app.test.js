@@ -479,3 +479,27 @@ describe("Interactions between queries on GET /api/articles", () => {
       });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  it("200: responds with the correct user object", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toEqual({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+      });
+  });
+  it("404: responds with the correct error message when a username does not exist in the database", () => {
+    return request(app)
+      .get("/api/users/kingpin")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("No User With That Username Can Be Found");
+      });
+  });
+});
