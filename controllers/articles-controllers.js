@@ -2,6 +2,7 @@ const {
   selectArticle,
   selectArticles,
   updateArticleVotes,
+  addNewArticle,
 } = require("../models/articles-models");
 const { selectTopic } = require("../models/topics-models");
 
@@ -42,6 +43,16 @@ exports.patchArticleById = (req, res, next) => {
     .then((result) => {
       article = result[0];
       res.status(200).send({ article });
+    })
+    .catch(next);
+};
+
+exports.postArticle = (req, res, next) => {
+  const { author, title, body, topic, article_img_url } = req.body;
+  addNewArticle(author, title, body, topic, article_img_url)
+    .then((article) => {
+      article["comment_count"] = 0;
+      res.status(201).send({ article });
     })
     .catch(next);
 };
