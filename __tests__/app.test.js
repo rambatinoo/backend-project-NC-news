@@ -306,7 +306,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("PATCH /api/articles/:article_id", () => {
+describe("PATCH /api/articles/:article_id", () => {
   it("200: updates the article and responds with the updated article", () => {
     return request(app)
       .patch("/api/articles/1")
@@ -373,7 +373,7 @@ describe.only("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe.only("DELETE /api/comments/:comment_id", () => {
+describe("DELETE /api/comments/:comment_id", () => {
   it("204: removed the specified comment and responds with no content", () => {
     return request(app)
       .delete("/api/comments/1")
@@ -415,6 +415,66 @@ describe("GET /api/users", () => {
           expect(typeof user.username).toBe("string");
           expect(typeof user.name).toBe("string");
           expect(typeof user.avatar_url).toBe("string");
+        });
+      });
+  });
+});
+
+describe("Sort by queries for GET /api/articles", () => {
+  it("200: respond with the array correctly sorted when passed a sorted by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("author", { descending: true });
+      });
+  });
+  it("200: respond with the array correctly sorted when passed a sorted by query that could be ambiguous", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("article_id", { descending: true });
+      });
+  });
+  it("400: respond with the corect error message for queries that are not allowed ", () => {
+    return request(app)
+      .get("/api/articles?sort_by=bubbles")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid Sort By Query");
+      });
+  });
+});
+
+describe("Order by queries for GET /api/articles", () => {
+  it("200: responds with the array correctly ordered when passed an order query", () => {
+    return request(app)
+      .get("/api/articles?order=ASC")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  it("400: responds with the correct error message when passed an invalid order query", () => {
+    return request(app)
+      .get("/api/articles?order=bubbles")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid Order Query");
+      });
+  });
+});
+
+describe("Interactions between queries on GET /api/articles", () => {
+  it("200: responds with the correct topic articles, sorted and ordered correctly", () => {
+    return request(app)
+      .get("/api/articles?order=ASC&topic=mitch&sort_by=article_id")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("article_id", { ascending: true });
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
         });
       });
   });

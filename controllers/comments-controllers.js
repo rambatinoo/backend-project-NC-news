@@ -36,7 +36,7 @@ exports.deleteComment = (req, res, next) => {
   const { comment_id } = req.params;
   selectComment(comment_id)
     .then(() => {
-      removeComment(comment_id);
+      return removeComment(comment_id);
     })
     .then(() => {
       res.status(204).send({});
