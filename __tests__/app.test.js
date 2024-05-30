@@ -98,7 +98,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe.only("GET /api/articles", () => {
+describe("GET /api/articles", () => {
   it("200: responds with list of all articles including the amount of comments for each, sorted by date (most recent first)", () => {
     return request(app)
       .get("/api/articles")
@@ -420,7 +420,7 @@ describe("GET /api/users", () => {
   });
 });
 
-describe.only("Sort by queries for GET /api/articles", () => {
+describe("Sort by queries for GET /api/articles", () => {
   it("200: respond with the array correctly sorted when passed a sorted by query", () => {
     return request(app)
       .get("/api/articles?sort_by=author")
@@ -447,7 +447,7 @@ describe.only("Sort by queries for GET /api/articles", () => {
   });
 });
 
-describe.only("Order by queries for GET /api/articles", () => {
+describe("Order by queries for GET /api/articles", () => {
   it("200: responds with the array correctly ordered when passed an order query", () => {
     return request(app)
       .get("/api/articles?order=ASC")
@@ -466,7 +466,7 @@ describe.only("Order by queries for GET /api/articles", () => {
   });
 });
 
-describe.only("Interactions between queries on GET /api/articles", () => {
+describe("Interactions between queries on GET /api/articles", () => {
   it("200: responds with the correct topic articles, sorted and ordered correctly", () => {
     return request(app)
       .get("/api/articles?order=ASC&topic=mitch&sort_by=article_id")
