@@ -259,7 +259,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(commentWithoutUsername)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Incorrect Information For Request");
+        expect(body.msg).toBe("Username And Body Are Required To Be Strings");
       })
       .then(() => {
         return request(app)
@@ -267,7 +267,9 @@ describe("POST /api/articles/:article_id/comments", () => {
           .send(commentWithoutBody)
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).toBe("Incorrect Information For Request");
+            expect(body.msg).toBe(
+              "Username And Body Are Required To Be Strings"
+            );
           });
       })
       .then(() => {
@@ -276,7 +278,9 @@ describe("POST /api/articles/:article_id/comments", () => {
           .send({ username: "butter_bridge", body: 123 })
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).toBe("Incorrect Information For Request");
+            expect(body.msg).toBe(
+              "Username And Body Are Required To Be Strings"
+            );
           });
       })
       .then(() => {
@@ -285,7 +289,9 @@ describe("POST /api/articles/:article_id/comments", () => {
           .send({ username: 123, body: "add this comment" })
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).toBe("Incorrect Information For Request");
+            expect(body.msg).toBe(
+              "Username And Body Are Required To Be Strings"
+            );
           });
       });
   });
@@ -300,7 +306,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("PATCH /api/articles/:article_id", () => {
+describe.only("PATCH /api/articles/:article_id", () => {
   it("200: updates the article and responds with the updated article", () => {
     return request(app)
       .patch("/api/articles/1")
@@ -353,7 +359,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inv_votes: 1 })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Incorrect Information For Request");
+        expect(msg).toBe("inc_votes Must Be A Number");
       })
       .then(() => {
         return request(app)
@@ -361,13 +367,13 @@ describe("PATCH /api/articles/:article_id", () => {
           .send({ inc_votes: "hello" })
           .expect(400)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Incorrect Information For Request");
+            expect(msg).toBe("inc_votes Must Be A Number");
           });
       });
   });
 });
 
-describe("DELETE /api/comments/:comment_id", () => {
+describe.only("DELETE /api/comments/:comment_id", () => {
   it("204: removed the specified comment and responds with no content", () => {
     return request(app)
       .delete("/api/comments/1")

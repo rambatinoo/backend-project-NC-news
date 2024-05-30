@@ -23,7 +23,7 @@ exports.postNewComment = (req, res, next) => {
   const { article_id } = req.params;
   const { username, body } = req.body;
   if (typeof username !== "string" || typeof body !== "string") {
-    next({ code: "23502" });
+    next({ status: 400, msg: "Username And Body Are Required To Be Strings" });
   }
   addNewComment(article_id, username, body)
     .then((comment) => {

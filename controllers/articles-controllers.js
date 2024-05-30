@@ -32,7 +32,7 @@ exports.patchArticleById = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
   if (typeof inc_votes !== "number") {
-    next({ code: "23502" });
+    next({ status: 400, msg: "inc_votes Must Be A Number" });
   }
   const promises = [
     updateVotes(article_id, inc_votes),
