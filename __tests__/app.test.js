@@ -446,3 +446,22 @@ describe.only("Sort by queries for GET /api/articles", () => {
       });
   });
 });
+
+describe.only("Order by queries for GET /api/articles", () => {
+  it("200: responds with the array correctly ordered when passed an order query", () => {
+    return request(app)
+      .get("/api/articles?order=ASC")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  it("400: responds with the correct error message when passed an invalid order query", () => {
+    return request(app)
+      .get("/api/articles?order=bubbles")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid Order Query");
+      });
+  });
+});
