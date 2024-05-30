@@ -596,4 +596,38 @@ describe("POST /api/articles", () => {
         expect(typeof article.created_at).toBe("string");
       });
   });
+  it("400: responds with the correct error message when the provided information is in an incorrect format", () => {
+    const newArticle = {
+      author: 123,
+      title: "How to eat bricks",
+      body: "don't",
+      topic: "cats",
+      article_img_url:
+        "https://libreshot.com/wp-content/uploads/2018/02/orange-brick-wall.jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("all input values must be strings");
+      });
+  });
+  it("400: responds with the correct error message when the required fields are missing", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "How to eat bricks",
+      NOTbody: "don't",
+      topic: "cats",
+      article_img_url:
+        "https://libreshot.com/wp-content/uploads/2018/02/orange-brick-wall.jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("articles must contain: author, title, body & topic");
+      });
+  });
 });
