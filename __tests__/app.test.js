@@ -494,4 +494,12 @@ describe("GET /api/users/:username", () => {
         });
       });
   });
+  it("404: responds with the correct error message when a username does not exist in the database", () => {
+    return request(app)
+      .get("/api/users/kingpin")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("No User With That Username Can Be Found");
+      });
+  });
 });
