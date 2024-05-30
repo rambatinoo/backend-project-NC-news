@@ -22,7 +22,25 @@ exports.selectArticle = (article_id) => {
     });
 };
 
-exports.selectArticles = (topic) => {
+exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
+  sort_by = sort_by.toLowerCase();
+  order = order.toUpperCase();
+  const validSortBy = [
+    "article_id",
+    "author",
+    "title",
+    "topic",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+  const validOrder = ["ASC", "DESC"];
+  if (!validSortBy.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Invalid Sort By Query" });
+  }
+  if (!validOrder.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Invalid Order Query" });
+  }
   const queryArr = [];
   let queryStr = `SELECT article_id, articles.author, title, topic, articles.created_at, articles.votes, article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count
       FROM articles
@@ -33,7 +51,7 @@ exports.selectArticles = (topic) => {
     queryArr.push(topic);
   }
   queryStr += `GROUP BY article_id
-    ORDER BY articles.created_at DESC`;
+    ORDER BY ${sort_by} ${order}`;
 
   return db.query(queryStr, queryArr).then((result) => {
     return result.rows;

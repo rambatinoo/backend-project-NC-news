@@ -98,7 +98,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe("GET /api/articles", () => {
+describe.only("GET /api/articles", () => {
   it("200: responds with list of all articles including the amount of comments for each, sorted by date (most recent first)", () => {
     return request(app)
       .get("/api/articles")
@@ -306,7 +306,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("PATCH /api/articles/:article_id", () => {
+describe("PATCH /api/articles/:article_id", () => {
   it("200: updates the article and responds with the updated article", () => {
     return request(app)
       .patch("/api/articles/1")
@@ -373,7 +373,7 @@ describe.only("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe.only("DELETE /api/comments/:comment_id", () => {
+describe("DELETE /api/comments/:comment_id", () => {
   it("204: removed the specified comment and responds with no content", () => {
     return request(app)
       .delete("/api/comments/1")
@@ -416,6 +416,33 @@ describe("GET /api/users", () => {
           expect(typeof user.name).toBe("string");
           expect(typeof user.avatar_url).toBe("string");
         });
+      });
+  });
+});
+
+describe.only("Sort by queries for GET /api/articles", () => {
+  it("200: respond with the array correctly sorted when passed a sorted by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("author", { descending: true });
+      });
+  });
+  it("200: respond with the array correctly sorted when passed a sorted by query that could be ambiguous", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("article_id", { descending: true });
+      });
+  });
+  it("400: respond with the corect error message for queries that are not allowed ", () => {
+    return request(app)
+      .get("/api/articles?sort_by=bubbles")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid Sort By Query");
       });
   });
 });
