@@ -22,3 +22,22 @@ exports.selectTopic = (topic) => {
       return result.rows[0];
     });
 };
+
+exports.addNewTopic = (slug, description) => {
+  if (typeof slug !== "string" || typeof description !== "string") {
+    return Promise.reject({
+      status: 400,
+      msg: "all input values must be strings",
+    });
+  }
+  return db
+    .query(
+      `INSERT INTO topics (slug, description)
+  VALUES ($1, $2)
+  RETURNING *`,
+      [slug, description]
+    )
+    .then((result) => {
+      return result.rows[0];
+    });
+};

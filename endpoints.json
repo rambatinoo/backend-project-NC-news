@@ -124,7 +124,7 @@
     }
   },
   "POST /api/articles": {
-    "description": "adds a new article to the database and returns the added article article url is optional",
+    "description": "adds a new article to the database and returns the added article, article url is optional",
     "exampleBody": {
       "author": "butter_bridge",
       "title": "How to eat bricks",
@@ -143,6 +143,18 @@
       "created_at": "2018-05-30T15:59:13.341Z",
       "votes": 0,
       "comment_count": 0
+    }
+  },
+  "POST /api/topics": {
+    "description": "adds a new topic to the database and returns the added topic",
+    "exampleBody": {
+      "slug": "apples",
+      "description": "fall from trees"
+    },
+    "queries": [],
+    "exampleResponse": {
+      "slug": "apples",
+      "description": "fall from trees"
     }
   }
 }
