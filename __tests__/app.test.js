@@ -99,13 +99,14 @@ describe("GET /api/articles/:article_id", () => {
 });
 
 describe("GET /api/articles", () => {
-  it("200: responds with list of all articles including the amount of comments for each, sorted by date (most recent first)", () => {
+  it("200: responds with list of all articles including the amount of comments for each, sorted by date (most recent first) with 10 results, including total count", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then(({ body: { articles } }) => {
-        expect(articles.length).toBe(13);
+      .then(({ body: { articles, totalCount } }) => {
+        expect(articles.length).toBe(10);
         expect(articles).toBeSortedBy("created_at", { descending: true });
+        expect(totalCount).toBe(13);
         articles.forEach((article) => {
           expect(Object.keys(article).length).toBe(8);
           expect(typeof article.article_id).toBe("number");
@@ -123,9 +124,10 @@ describe("GET /api/articles", () => {
     return request(app)
       .get("/api/articles?topic=mitch")
       .expect(200)
-      .then(({ body: { articles } }) => {
-        expect(articles.length).toBe(12);
+      .then(({ body: { articles, totalCount } }) => {
+        expect(articles.length).toBe(10);
         expect(articles).toBeSortedBy("created_at", { descending: true });
+        expect(totalCount).toBe(12);
         articles.forEach((article) => {
           expect(article.topic).toBe("mitch");
         });
@@ -135,8 +137,9 @@ describe("GET /api/articles", () => {
     return request(app)
       .get("/api/articles?topic=paper")
       .expect(200)
-      .then(({ body: { articles } }) => {
+      .then(({ body: { articles, totalCount } }) => {
         expect(articles).toEqual([]);
+        expect(totalCount).toBe(0);
       });
   });
   it("400: responds with the correct error message when passed an invalid topic query", () => {
@@ -478,6 +481,22 @@ describe("Interactions between queries on GET /api/articles", () => {
         });
       });
   });
+  it("responds with the correct number of articles, sorted and ordered correctly on the correct page and with the correct limit, including a total count", () => {
+    return request(app)
+      .get("/api/articles?order=ASC&topic=mitch&sort_by=article_id&limit=5&p=2")
+      .expect(200)
+      .then(({ body: { articles, totalCount } }) => {
+        expect(totalCount).toBe(12);
+        expect(articles.length).toBe(5);
+        expect(articles).toBeSortedBy("article_id", { ascending: true });
+        articles.forEach((article) => {
+          console.log(article);
+          expect(article.topic).toBe("mitch");
+          expect(article.article_id).toBeGreaterThan(6);
+          expect(article.article_id).toBeLessThan(12);
+        });
+      });
+  });
 });
 
 describe("GET /api/users/:username", () => {
@@ -628,6 +647,55 @@ describe("POST /api/articles", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("articles must contain: author, title, body & topic");
+      });
+  });
+});
+
+describe("Add pagination to GET /api/articles", () => {
+  it("200: defaults to limit 10 and page 1", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles, totalCount } }) => {
+        expect(articles.length).toBe(10);
+        expect(totalCount).toBe(13);
+      });
+  });
+  it("200 limits the nuber of responses when passed a limit value", () => {
+    return request(app)
+      .get("/api/articles?limit=3")
+      .expect(200)
+      .then(({ body: { articles, totalCount } }) => {
+        expect(articles.length).toBe(3);
+        expect(totalCount).toBe(13);
+      });
+  });
+  it("200 responds with the correct page of results if passed a page number", () => {
+    return request(app)
+      .get("/api/articles?p=2&sort_by=article_id&order=asc")
+      .expect(200)
+      .then(({ body: { articles, totalCount } }) => {
+        expect(articles.length).toBe(3);
+        expect(totalCount).toBe(13);
+        articles.forEach((article) => {
+          expect(article.article_id).toBeGreaterThan(10);
+        });
+      });
+  });
+  it("400 responds with the correct error message when passed an invalid limit query", () => {
+    return request(app)
+      .get("/api/articles?limit=bubbles")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("400: responds with the correct error message if passed an invalid p query", () => {
+    return request(app)
+      .get("/api/articles?p=bubbles")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
       });
   });
 });

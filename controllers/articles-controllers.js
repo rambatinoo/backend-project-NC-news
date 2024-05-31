@@ -17,14 +17,15 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  let { topic, sort_by, order } = req.query;
+  let { topic, sort_by, order, limit, p } = req.query;
   if (topic) topic = topic.toLowerCase();
-  const promises = [selectArticles(topic, sort_by, order)];
+  const promises = [selectArticles(topic, sort_by, order, limit, p)];
   if (topic) promises.push(selectTopic(topic));
   Promise.all(promises)
     .then((result) => {
-      const articles = result[0];
-      res.status(200).send({ articles });
+      const articles = result[0].articles;
+      const totalCount = result[0].totalCount;
+      res.status(200).send({ articles, totalCount });
     })
     .catch(next);
 };

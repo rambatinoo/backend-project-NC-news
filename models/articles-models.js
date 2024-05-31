@@ -22,9 +22,16 @@ exports.selectArticle = (article_id) => {
     });
 };
 
-exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
+exports.selectArticles = (
+  topic,
+  sort_by = "created_at",
+  order = "desc",
+  limit = 10,
+  p = 1
+) => {
   sort_by = sort_by.toLowerCase();
   order = order.toUpperCase();
+  const offsetNum = limit * (p - 1);
   const validSortBy = [
     "article_id",
     "author",
@@ -41,20 +48,38 @@ exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
   if (!validOrder.includes(order)) {
     return Promise.reject({ status: 400, msg: "Invalid Order Query" });
   }
+
   const queryArr = [];
-  let queryStr = `SELECT article_id, articles.author, title, topic, articles.created_at, articles.votes, article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count
+  let queryStr = `SELECT article_id, articles.author, title, topic, articles.created_at, articles.votes, article_img_url, 
+  CAST(COUNT(comments.comment_id) AS INT) AS comment_count, CAST(COUNT(*) OVER() AS INT) AS total_count
       FROM articles
       LEFT JOIN comments USING (article_id) `;
 
   if (topic) {
     queryStr += `WHERE topic = $1 `;
     queryArr.push(topic);
+    queryStr += `GROUP BY article_id
+      ORDER BY ${sort_by} ${order}
+      LIMIT $2 OFFSET $3`;
+  } else {
+    queryStr += `GROUP BY article_id
+    ORDER BY ${sort_by} ${order}
+    LIMIT $1 OFFSET $2`;
   }
-  queryStr += `GROUP BY article_id
-    ORDER BY ${sort_by} ${order}`;
 
+  queryArr.push(limit);
+  queryArr.push(offsetNum);
   return db.query(queryStr, queryArr).then((result) => {
-    return result.rows;
+    const articles = result.rows;
+    let totalCount = 0;
+    if (result.rows.length) {
+      totalCount = result.rows[0].total_count;
+      articles.forEach((article) => {
+        delete article.total_count;
+      });
+    }
+
+    return { articles, totalCount };
   });
 };
 
