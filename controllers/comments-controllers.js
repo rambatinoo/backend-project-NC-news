@@ -9,8 +9,9 @@ const { selectArticle } = require("../models/articles-models");
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
+  const { limit, p } = req.query;
   Promise.all([
-    selectCommentsByArticleId(article_id),
+    selectCommentsByArticleId(article_id, limit, p),
     selectArticle(article_id),
   ])
     .then((result) => {

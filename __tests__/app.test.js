@@ -166,7 +166,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
-        expect(comments.length).toBe(11);
+        expect(comments.length).toBe(10);
         expect(comments).toBeSortedBy("created_at", { descending: true });
         comments.forEach((comment) => {
           expect(Object.keys(comment).length).toBe(6);
@@ -693,6 +693,57 @@ describe("Add pagination to GET /api/articles", () => {
   it("400: responds with the correct error message if passed an invalid p query", () => {
     return request(app)
       .get("/api/articles?p=bubbles")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+});
+
+describe("Add pagination to GET /api/articles/:article_id/comments", () => {
+  it("200: defaults to limit 10 and page 1", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBe(10);
+      });
+  });
+  it("responds with the correct number of results if passed a limit", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=3")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBe(3);
+      });
+  });
+  it("responds with the correct page if passed a p value", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=2")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBe(1);
+      });
+  });
+  it("respond correctly when passed both a limit and a page number ", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=7&p=2")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBe(4);
+      });
+  });
+  it("400: responds with the correct error message when passed an invalid limit query", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=bubbles")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("400: responds with the correct error message when passed an invalid p query", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=bubbles")
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad Request");
