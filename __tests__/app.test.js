@@ -750,3 +750,23 @@ describe("Add pagination to GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe.only("POST /api/topics", () => {
+  it("201: responds with the newly created topic", () => {
+    const newTopic = {
+      slug: "atoms",
+      description: "what everything is made of",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .then(({ body: { topic } }) => {
+        expect(topic).toEqual(newTopic);
+        return request(app)
+          .get("/api/topics")
+          .then(({ body: { topics } }) => {
+            expect(topics.length).toBe(4);
+          });
+      });
+  });
+});
