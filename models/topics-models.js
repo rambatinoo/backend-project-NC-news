@@ -24,6 +24,12 @@ exports.selectTopic = (topic) => {
 };
 
 exports.addNewTopic = (slug, description) => {
+  if (typeof slug !== "string" || typeof description !== "string") {
+    return Promise.reject({
+      status: 400,
+      msg: "all input values must be strings",
+    });
+  }
   return db
     .query(
       `INSERT INTO topics (slug, description)

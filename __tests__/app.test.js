@@ -751,7 +751,7 @@ describe("Add pagination to GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("POST /api/topics", () => {
+describe("POST /api/topics", () => {
   it("201: responds with the newly created topic", () => {
     const newTopic = {
       slug: "atoms",
@@ -760,6 +760,7 @@ describe.only("POST /api/topics", () => {
     return request(app)
       .post("/api/topics")
       .send(newTopic)
+      .expect(201)
       .then(({ body: { topic } }) => {
         expect(topic).toEqual(newTopic);
         return request(app)
@@ -767,6 +768,32 @@ describe.only("POST /api/topics", () => {
           .then(({ body: { topics } }) => {
             expect(topics.length).toBe(4);
           });
+      });
+  });
+  it("400: responds with the correct error message when the provided information is in an incorrect format", () => {
+    const newTopic = {
+      slug: 123,
+      description: "what everything is made of",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("all input values must be strings");
+      });
+  });
+  it("400 responds with the correct error message when required fields are missing", () => {
+    const newTopic = {
+      not_slug: "atoms",
+      description: "what everything is made of",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("topics must contain: slug and description");
       });
   });
 });

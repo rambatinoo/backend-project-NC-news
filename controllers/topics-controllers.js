@@ -8,7 +8,15 @@ exports.getTopics = (req, res, next) => {
 
 exports.postTopic = (req, res, next) => {
   const { slug, description } = req.body;
-  addNewTopic(slug, description).then((topic) => {
-    res.status(201).send({ topic });
-  });
+  if (!slug || !description) {
+    return next({
+      status: 400,
+      msg: "topics must contain: slug and description",
+    });
+  }
+  addNewTopic(slug, description)
+    .then((topic) => {
+      res.status(201).send({ topic });
+    })
+    .catch(next);
 };
