@@ -58,3 +58,9 @@ exports.updateComentVotes = (comment_id, voteChange) => {
       return result.rows[0];
     });
 };
+
+exports.selectComments = () => {
+  return db.query(`SELECT * FROM comments`).then(({ rows }) => {
+    return rows;
+  });
+};

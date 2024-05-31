@@ -4,6 +4,7 @@ const {
   removeComment,
   selectComment,
   updateComentVotes,
+  selectComments,
 } = require("../models/comments-models");
 const { selectArticle } = require("../models/articles-models");
 
@@ -59,4 +60,10 @@ exports.patchComment = (req, res, next) => {
       res.status(200).send({ comment });
     })
     .catch(next);
+};
+
+exports.getComments = (req, res, next) => {
+  selectComments().then((comments) => {
+    res.status(200).send({ comments });
+  });
 };

@@ -797,3 +797,45 @@ describe("POST /api/topics", () => {
       });
   });
 });
+
+describe.only("DELETE /api/articles/:article_id", () => {
+  it("204: responds with correct error code and removes article", () => {
+    return request(app)
+      .delete("/api/articles/1")
+      .expect(204)
+      .then(() => {
+        return request(app)
+          .get("/api/articles")
+          .then(({ body: { totalCount } }) => {
+            expect(totalCount).toBe(12);
+          });
+      });
+  });
+  it("removes all associated comments to the deleted article", () => {
+    return request(app)
+      .delete("/api/articles/1")
+      .then(() => {
+        return request(app)
+          .get("/api/comments")
+          .then(({ body: { comments } }) => {
+            expect(comments.length).toBe(7);
+          });
+      });
+  });
+  it("400: responds with the correct error message when passed an invalid article_id", () => {
+    return request(app)
+      .delete("/api/articles/not_an_id")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("404: responds with the corrrect error message when passed a valid but non-existent id", () => {
+    return request(app)
+      .delete("/api/articles/999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("No Article With That Id Found");
+      });
+  });
+});
