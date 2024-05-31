@@ -5,7 +5,6 @@ exports.customErrors = (err, req, res, next) => {
 };
 
 exports.errorsWithCodes = (err, req, res, next) => {
-  console.log(err);
   if (err.code) {
     switch (err.code) {
       case "22P02":

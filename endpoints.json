@@ -156,5 +156,10 @@
       "slug": "apples",
       "description": "fall from trees"
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes the given article and all comments associated with it",
+    "queries": [],
+    "exampleResponse": "no response given, just 204 status"
   }
 }

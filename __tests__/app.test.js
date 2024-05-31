@@ -490,7 +490,6 @@ describe("Interactions between queries on GET /api/articles", () => {
         expect(articles.length).toBe(5);
         expect(articles).toBeSortedBy("article_id", { ascending: true });
         articles.forEach((article) => {
-          console.log(article);
           expect(article.topic).toBe("mitch");
           expect(article.article_id).toBeGreaterThan(6);
           expect(article.article_id).toBeLessThan(12);
@@ -798,7 +797,7 @@ describe("POST /api/topics", () => {
   });
 });
 
-describe.only("DELETE /api/articles/:article_id", () => {
+describe("DELETE /api/articles/:article_id", () => {
   it("204: responds with correct error code and removes article", () => {
     return request(app)
       .delete("/api/articles/1")
